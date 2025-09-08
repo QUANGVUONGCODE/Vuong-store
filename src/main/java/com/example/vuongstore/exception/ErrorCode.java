@@ -47,7 +47,9 @@ public enum ErrorCode {
     INVALID_PRODUCT_ID(1038, "Product id does not exist", HttpStatus.BAD_REQUEST),
     INVALID_PRODUCT_PRICE(1039, "Price product cannot null", HttpStatus.BAD_REQUEST),
     INVALID_PRODUCT_QUANTITY(1040, "Quantity product cannot null", HttpStatus.BAD_REQUEST),
-    USER_NOT_EXISTS(1041, "User not exists", HttpStatus.BAD_REQUEST)
+    USER_NOT_EXISTS(1041, "User not exists", HttpStatus.BAD_REQUEST),
+    UNAUTHENTICATED(1042, "User not authenticated", HttpStatus.UNAUTHORIZED),
+    INVALID_TOKEN(1043, "Invalid token", HttpStatus.UNAUTHORIZED)
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

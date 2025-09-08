@@ -1,4 +1,4 @@
-package com.example.vuongstore.dto.response.responseService;
+package com.example.vuongstore.dto.request.requestService;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -8,7 +8,6 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class AuthenticationResponse {
+public class IntrospectRequest {
     String token;
-    boolean authenticated;
 }

@@ -21,3 +21,7 @@ spring:
 
 api:
   prefix: /api/v1
+jwt:
+  signerKey: rCUelIkPrg2cxFneAe1CeNF5ndX21RHJszJUIseX3UAzZZ7y4mjJCcc3TjrbMc2D
+  valid-duration: 3600000
+  refresh-duration: 86400000
