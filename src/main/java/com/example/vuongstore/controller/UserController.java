@@ -47,4 +47,11 @@ public class UserController {
                 .result("User deleted successfully")
                 .build();
     }
+
+    @GetMapping("myInfo")
+    ApiResponse<UserResponse> getMyInfo(){
+        return ApiResponse.<UserResponse>builder()
+                .result(userService.getMyInfor())
+                .build();
+    }
 }

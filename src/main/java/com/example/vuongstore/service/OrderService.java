@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,6 +35,8 @@ public class OrderService {
     OrderDetailMapper orderDetailMapper;
     OrderDetailRepository orderDetailRepository;
 
+
+    @PreAuthorize("#request.userId == authentication.principal.claims['userId'] || hasRole('ADMIN')")
     public OrderResponse createOrder(OrderRequest request){
         User user = userRepository.findById(request.getUserId()).orElseThrow(
                 () -> new AppException(ErrorCode.INVALID_USER_ID)
@@ -84,11 +87,14 @@ public class OrderService {
         return orderMapper.maptoOrderResponse(order);
     }
 
+
+    @PreAuthorize("hasRole('ADMIN')")
     public Page<OrderResponse> getAllOrders(String keyword,Pageable pageable){
         return orderRepository.findByKeyword(keyword, pageable).map(orderMapper::maptoOrderResponse);
     }
 
 
+    @PreAuthorize("#userId == authentication.principal.claims['userId'] || hasRole('ADMIN')")
     public List<OrderResponse> getOrderByUserId(Long userId){
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new AppException(ErrorCode.INVALID_USER_ID)
@@ -99,6 +105,7 @@ public class OrderService {
     }
 
 
+    @PreAuthorize("hasRole('ADMIN') or @orderRepository.existsByIdAndUser_Id(#orderId, T(java.lang.Long).valueOf(principal?.claims['userId']))")
     public OrderResponse updateOrder(Long orderId, OrderUpdateRequest request){
         Order order = orderRepository.findById(orderId).orElseThrow(
                 () -> new AppException(ErrorCode.INVALID_ORDER_ID)
@@ -114,11 +121,13 @@ public class OrderService {
         return orderMapper.maptoOrderResponse(order);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or @orderRepository.existsByIdAndUser_Id(#orderId, T(java.lang.Long).valueOf(principal?.claims['userId']))")
     public void deleteOrder(Long orderId){
         Order order = orderRepository.findById(orderId).orElseThrow(
                 () -> new AppException(ErrorCode.INVALID_ORDER_ID)
         );
         order.setActive(false);
+        order.setStatus(OrderStatus.CANCELLED.name());
         orderRepository.save(order);
     }
 }

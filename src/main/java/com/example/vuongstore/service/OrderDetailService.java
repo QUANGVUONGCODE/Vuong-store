@@ -14,6 +14,7 @@ import com.example.vuongstore.repository.ProductRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,6 +27,7 @@ public class OrderDetailService {
     OrderDetailMapper orderDetailMapper;
     OrderRepository orderRepository;
     ProductRepository productRepository;
+
 
     public OrderDetailResponse createOrderDetail(OrderDetailRequest request){
         Order order = orderRepository.findById(request.getOrderId()).orElseThrow(
@@ -42,6 +44,7 @@ public class OrderDetailService {
         return orderDetailMapper.maptoOrderDetailResponse(orderDetailRepository.save(orderDetail));
     }
 
+    @PreAuthorize("hasRole('ADMIN') or @orderRepository.existsByIdAndUser_Id(#orderId, T(java.lang.Long).valueOf(principal?.claims['userId']))")
     public List<OrderDetailResponse> getOrderDetailByOrderId(Long orderId){
         Order order = orderRepository.findById(orderId).orElseThrow(
                 () -> new AppException(ErrorCode.INVALID_ORDER_ID)
@@ -51,6 +54,4 @@ public class OrderDetailService {
                 .map(orderDetailMapper::maptoOrderDetailResponse)
                 .toList();
     }
-
-
 }

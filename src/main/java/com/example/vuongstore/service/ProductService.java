@@ -21,6 +21,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -51,16 +52,19 @@ public class ProductService {
         return productMapper.toProductResponse(productRepository.save(product));
     }
 
+
     public ProductResponse getProductById(Long id) {
         return productMapper.toProductResponse(productRepository.findById(id).orElseThrow(
                 () -> new AppException(ErrorCode.INVALID_ID)));
     }
 
+    @PreAuthorize("permitAll()")
     public Page<ProductResponse> getAllProducts(String keyword, Long categoryId,Long brandId, PageRequest pageRequest) {
         return productRepository.findAll(pageRequest, categoryId,brandId, keyword)
                 .map(productMapper::toProductResponse);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public ProductResponse updateProduct(ProductRequestUpdate request, Long id){
         Product product = productRepository.findById(id).orElseThrow(
                 () -> new AppException(ErrorCode.INVALID_ID)
@@ -70,6 +74,7 @@ public class ProductService {
         return productMapper.toProductResponse(productRepository.save(product));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteProduct(Long id) {
         if(!productRepository.existsById(id)){
             throw new AppException(ErrorCode.INVALID_ID);
@@ -81,19 +86,24 @@ public class ProductService {
         return productRepository.existsByName(name);
     }
 
+    @PreAuthorize("permitAll()")
     public List<Product> getProductsByIds(List<Long> productIds) {
         return productRepository.findByIdIn(productIds);
     }
 
+
+    @PreAuthorize("permitAll()")
     public List<ProductImage> getProductImageById(Long id){
         return productImageRepository.findByProductId(id);
     }
 
+    @PreAuthorize("permitAll()")
     public ProductImage getProductImageByThumbnail(String thumbnail) {
         return productImageRepository.findByUrl(thumbnail).orElseThrow(
                 () -> new AppException(ErrorCode.INVALID_THUMBNAIL)
         );
     }
+
 
     public ProductImage createProductImage(Long productId, ProductImageRequest request) {
         Product product = productRepository.findById(productId).orElseThrow(

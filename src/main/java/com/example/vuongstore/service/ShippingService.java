@@ -10,6 +10,7 @@ import com.example.vuongstore.repository.ShippingRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class ShippingService {
     ShippingRepository shippingRepository;
     ShippingMapper shippingMapper;
 
+    @PreAuthorize("hasRole('ADMIN')")
     public ShippingResponse createShipping(ShippingRequest request){
         if(shippingRepository.existsByName(request.getName())){
             throw new AppException(ErrorCode.SHIPPING_EXISTS);
@@ -39,6 +41,7 @@ public class ShippingService {
         return shippingRepository.findAll().stream().map(shippingMapper::toShippingResponse).toList();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public ShippingResponse updateShipping(ShippingRequest request, Long id){
         Shipping shipping = shippingRepository.findById(id).orElseThrow(
                 () -> new AppException(ErrorCode.INVALID_ID)
@@ -50,6 +53,7 @@ public class ShippingService {
         return shippingMapper.toShippingResponse(shippingRepository.save(shipping));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteShipping(Long id){
         if(!shippingRepository.existsById(id)){
             throw new AppException(ErrorCode.INVALID_ID);

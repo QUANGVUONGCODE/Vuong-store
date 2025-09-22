@@ -13,11 +13,15 @@ import com.example.vuongstore.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -25,6 +29,7 @@ public class UserService {
     UserRepository userRepository;
     UserMapper userMapper;
     PasswordEncoder passwordEncoder;
+
 
     public UserResponse createUser(UserRequest request){
         if(userRepository.existsByPhoneNumber(request.getPhoneNumber())){
@@ -56,6 +61,7 @@ public class UserService {
         return userRepository.findAll().stream().map(userMapper::toUserResponse).toList();
     }
 
+    @PreAuthorize("#id == authentication.principal.claims['userId'] || hasRole('ADMIN')")
     public UserResponse updateUser(UserRequestUpdate request, Long id){
         User user = userRepository.findById(id).orElseThrow(
                 () -> new AppException(ErrorCode.INVALID_ID));
@@ -70,6 +76,7 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
+    @PreAuthorize("#id == authentication.principal.claims['userId'] || hasRole('ADMIN')")
     public void deleteUser(Long id){
         User user = userRepository.findById(id).orElseThrow(
                 () -> new AppException(ErrorCode.INVALID_ID));
@@ -77,4 +84,14 @@ public class UserService {
         userRepository.save(user);
     }
 
+
+    public UserResponse getMyInfor(){
+        var context = SecurityContextHolder.getContext();
+        String phoneNumber = context.getAuthentication().getName();
+        log.info("ROLE:" + context.getAuthentication().getAuthorities());
+        User user = userRepository.findByPhoneNumber(phoneNumber).orElseThrow(
+                () -> new AppException(ErrorCode.USER_EXISTS)
+        );
+        return userMapper.toUserResponse(user);
+    }
 }

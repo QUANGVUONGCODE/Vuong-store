@@ -10,6 +10,7 @@ import com.example.vuongstore.repository.RoleRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,6 +20,7 @@ public class RoleService {
     RoleRepository roleRepository;
     RoleMapper roleMapper;
 
+    @PreAuthorize("hasRole('ADMIN')")
     public RoleResponse createRole(RoleRequest request){
         if(roleRepository.existsByName(request.getName())){
             throw new AppException(ErrorCode.ROLE_EXISTS);
