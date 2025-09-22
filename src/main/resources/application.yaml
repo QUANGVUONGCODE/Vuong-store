@@ -7,10 +7,10 @@ spring:
   application:
     name: vuongstore
   datasource:
-    url: ${DBMS_CONNECTION}
+    url: ${DBMS_CONNECTION:jdbc:mysql://mysql-8.0.43:3306/vuongstore?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
     driver-class-name: "com.mysql.cj.jdbc.Driver"
-    username: ${DBMS_USERNAME}
-    password: ${DBMS_PASSWORD}
+    username: ${DBMS_USERNAME:root}
+    password: ${DBMS_PASSWORD:root}
   jpa:
     show-sql: true
     hibernate:
@@ -26,3 +26,8 @@ jwt:
   signerKey: "rCUelIkPrg2cxFneAe1CeNF5ndX21RHJszJUIseX3UAzZZ7y4mjJCcc3TjrbMc2D"
   valid-duration: 3600000
   refresh-duration: 86400000
+
+
+#  -Dspring:
+#    profiles:
+#      active=prod:

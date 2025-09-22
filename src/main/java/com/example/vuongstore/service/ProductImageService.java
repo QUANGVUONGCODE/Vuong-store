@@ -40,7 +40,6 @@ public class ProductImageService {
 
 
 
-
      @PreAuthorize("hasRole('ADMIN')")
     public List<ProductImage> uploadProductImages(List<MultipartFile> files, Long id) throws IOException {
         ProductResponse productExisting = productService.getProductById(id);
