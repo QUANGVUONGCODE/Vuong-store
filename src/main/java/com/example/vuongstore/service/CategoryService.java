@@ -11,6 +11,7 @@ import com.example.vuongstore.repository.CategoryRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,6 +23,7 @@ public class CategoryService {
     CategoryRepository categoryRepository;
     CategoryMapper categoryMapper;
 
+    @PreAuthorize("hasRole('ADMIN')")
     public CategoryResponse createCategory(CategoryRequest categoryRequest){
         if(categoryRepository.existsByName(categoryRequest.getName())){
             throw new AppException(ErrorCode.CATEGORY_EXISTS);
@@ -34,11 +36,13 @@ public class CategoryService {
         return categoryRepository.findAll().stream().map(categoryMapper::toCategoryResponse).toList();
     }
 
+
     public CategoryResponse getCategoryById(Long id) {
         return categoryMapper.toCategoryResponse(categoryRepository.findById(id).orElseThrow(
                 () -> new AppException(ErrorCode.INVALID_ID)));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public CategoryResponse updateCategory(CategoryRequest request, Long id){
         Category category = categoryRepository.findById(id).orElseThrow(
                 () -> new AppException(ErrorCode.INVALID_ID)
@@ -47,6 +51,7 @@ public class CategoryService {
         return categoryMapper.toCategoryResponse(categoryRepository.save(category));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteCategory(Long id) {
         if(!categoryRepository.existsById(id)){
             throw new AppException(ErrorCode.INVALID_ID);

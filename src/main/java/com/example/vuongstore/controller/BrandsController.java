@@ -25,7 +25,7 @@ public class BrandsController {
     }
 
     @GetMapping("/{id}")
-    ApiResponse<BrandsResponse> getBrandById(Long id){
+    ApiResponse<BrandsResponse> getBrandById(@PathVariable Long id){
         return ApiResponse.<BrandsResponse>builder()
                 .result(brandsService.getBrandById(id))
                 .build();

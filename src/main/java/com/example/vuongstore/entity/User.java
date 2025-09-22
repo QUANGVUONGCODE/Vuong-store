@@ -22,13 +22,13 @@ public class User {
     @Column(name = "full_name", nullable = false, length = 100)
     String fullName;
 
-    @Column( name = "phone_number", nullable = false, length = 10)
+    @Column( name = "phone_number", nullable = false, length = 10, unique = true, columnDefinition = "VARCHAR(10)")
     String phoneNumber;
 
     @Column( name = "address", length = 100)
     String address;
 
-    @Column(name = "email", nullable = false, length = 100)
+    @Column(name = "email", nullable = false, length = 100, unique = true, columnDefinition = "VARCHAR(100) COLLATE utf8mb4_unicode_ci")
     String email;
 
     @Column(name = "password", nullable = false, length = 100)

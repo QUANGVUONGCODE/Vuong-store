@@ -56,6 +56,7 @@ public class AuthenticationService {
      protected Long refreshDuration;
 
      public IntrospectResponse introspect(IntrospectRequest request)throws ParseException, JOSEException{
+
          var token = request.getToken();
          boolean isvalid = true;
          try{
@@ -71,6 +72,7 @@ public class AuthenticationService {
 
 
      public AuthenticationResponse authenticate(AuthenticationRequest request){
+         log.info("SignKey: {}", signerKey);
          var user = userRepository.findByPhoneNumber(request.getPhoneNumber()).orElseThrow(
                  () -> new AppException(ErrorCode.USER_NOT_EXISTS)
          );

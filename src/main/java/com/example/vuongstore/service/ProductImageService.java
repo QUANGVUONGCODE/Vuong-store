@@ -10,6 +10,7 @@ import com.example.vuongstore.repository.ProductRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,6 +30,7 @@ import java.util.UUID;
 public class ProductImageService {
      ProductImageRepository productImageRepository;
      ProductService productService;
+     @PreAuthorize("hasRole('ADMIN')")
      public void deleteProductImage(Long id){
          List<ProductImage> productImages = productImageRepository.findByProductId(id);
          if(!productImages.isEmpty()){
@@ -39,6 +41,7 @@ public class ProductImageService {
 
 
 
+     @PreAuthorize("hasRole('ADMIN')")
     public List<ProductImage> uploadProductImages(List<MultipartFile> files, Long id) throws IOException {
         ProductResponse productExisting = productService.getProductById(id);
         files = files == null ? new ArrayList<>() : files;

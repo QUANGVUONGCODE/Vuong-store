@@ -10,6 +10,7 @@ import com.example.vuongstore.repository.PaymentRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,6 +23,7 @@ public class PaymentService {
     PaymentRepository paymentRepository;
     PaymentMapper paymentMapper;
 
+    @PreAuthorize("hasRole('ADMIN')")
     public PaymentResponse createPayment(PaymentRequest request){
         if(paymentRepository.existsByName(request.getName())){
             throw new AppException(ErrorCode.PAYMENT_EXISTS);
@@ -35,10 +37,12 @@ public class PaymentService {
                 () -> new AppException(ErrorCode.INVALID_ID)));
     }
 
+
     public List<PaymentResponse> getAllPayment(){
         return paymentRepository.findAll().stream().map(paymentMapper::toPaymentResponse).toList();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public PaymentResponse updatePayment(PaymentRequest request,Long id){
         Payment payment = paymentRepository.findById(id).orElseThrow(
                 () -> new AppException(ErrorCode.INVALID_ID)
@@ -49,6 +53,7 @@ public class PaymentService {
         return paymentMapper.toPaymentResponse(paymentRepository.save(payment));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public void deletePayment(Long id){
         if(!paymentRepository.existsById(id)){
             throw new AppException(ErrorCode.INVALID_ID);
